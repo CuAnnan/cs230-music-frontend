@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../CS230-music-app/.idea/CS230-music-app.iml" filepath="$PROJECT_DIR$/../CS230-music-app/.idea/CS230-music-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../cs230-music-backend/.idea/cs230-music-backend.iml" filepath="$PROJECT_DIR$/../cs230-music-backend/.idea/cs230-music-backend.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/cs230-music-front-end.iml" filepath="$PROJECT_DIR$/.idea/cs230-music-front-end.iml" />
     </modules>
   </component>

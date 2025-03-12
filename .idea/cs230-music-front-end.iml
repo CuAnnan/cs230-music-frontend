@@ -11,5 +11,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="CS230-music-app" />
+    <orderEntry type="module" module-name="cs230-music-backend" />
   </component>
 </module>
