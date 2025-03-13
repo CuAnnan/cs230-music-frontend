@@ -35,6 +35,8 @@ function ArtistSearchBar({searchText, setSearchText, setSearchResults})
     );
 }
 
+
+
 function ArtistSearchResult({artist, setArtist, setSearchText, setSearchResults})
 {
     return (
@@ -141,12 +143,88 @@ function ArtistField({artist, fieldName, fieldValue, isEditMode})
     }
 }
 
-function ArtistGenreAdd({artist})
+function ArtistGenreAdd({artist, modal, setModal})
 {
-    return (<span className="App-Artists-Genre">Add new genre ⊕</span>);
+    return (<span className="App-Artists-Genre" onClick={(e)=>{
+            setModal(!modal);
+        }}>Add new genre ⊕</span>);
 }
 
-function Artist({artist, isEditMode, setIsEditMode})
+function ArtistAddGenreModal({artist, modal, setModal})
+{
+    const [genres, setGenres] = useState("");
+
+    if(!modal)
+    {
+        return;
+    }
+
+    return(<div className="App-Modal">
+        <div className="App-Modal-Content">
+            <div className="App-Modal-Title">
+                Add Genre(s) to {artist.name}
+            </div>
+            <div className="App-Modal-Body">
+                <div>
+                    Enter a comma separated list:
+                </div>
+                <div>
+                    <input
+                        value={genres}
+                        onChange={(e)=>{
+                            setGenres(e.target.value)
+                        }}/>
+                </div>
+            </div>
+            <div className="App-Modal-Foot">
+                <button
+                    className="App-Button-Submit App-Button"
+                    onClick={(e)=>{
+                        console.log("Here")
+                        if(genres) {
+                            console.log("And here");
+                            let pendingGenres = genres.split(',');
+                            artist.pendingGenres = artist.pendingGenres?artist.pendingGenres:[];
+                            let i = artist.pendingGenres.length > 0 ? artist.pendingGenres[artist.pendingGenres.length - 1].idGenre : 0;
+                            for (let pendingGenre of pendingGenres) {
+                                i++;
+                                artist.pendingGenres.push({idGenre: i, pending:true, name: pendingGenre.trim()});
+                            }
+                        }
+                        setModal(false);
+                        setGenres("");
+                    }}
+                >Done</button>
+            </div>
+        </div>
+    </div>);
+}
+
+function PendingGenre({artist, genre, isEditMode})
+{
+    return (
+        <span
+            data-id-genre={genre.idGenre}
+            data-id-artist={artist.idartist}
+            className="App-Artists-Genre"
+            onClick={(e)=>{
+                if(isEditMode)
+                {
+                    artist.pendingGenres = artist.pendingGenres.filter((genre)=>{
+                        return parseInt(genre.idGenre) !== parseInt(e.target.dataset.idGenre)
+                    });
+                    e.target.style.display="none";
+                }
+                else
+                {
+
+                }
+            }}>
+            {genre.name}{(isEditMode)?" ⓧ":""}
+        </span>);
+}
+
+function Artist({artist, isEditMode, setIsEditMode, modal, setModal})
 {
     if(artist) {
         let artistGenres = [];
@@ -155,10 +233,17 @@ function Artist({artist, isEditMode, setIsEditMode})
                 <ArtistGenre key={genre.idGenre} genre={genre} artist={artist} isEditMode={isEditMode}/>
             );
         });
+        if(artist.pendingGenres) {
+            artist.pendingGenres.forEach(genre => {
+                artistGenres.push(
+                    <PendingGenre key={"p"+genre.idGenre} genre={genre} artist={artist} isEditMode={isEditMode}/>
+                );
+            });
+        }
         if(isEditMode)
         {
             artistGenres.push(
-                <ArtistGenreAdd artist={artist}/>
+                <ArtistGenreAdd key="-1" artist={artist} modal={modal} setModal={setModal}/>
             );
         }
 
@@ -176,7 +261,8 @@ function Artist({artist, isEditMode, setIsEditMode})
                 <div>Genres:</div>
                 <div>{artistGenres}</div>
             </div>
-            <ArtistControls artist={artist} isEditMode={isEditMode} setIsEditMode={setIsEditMode} />
+            <ArtistControls artist={artist} isEditMode={isEditMode} setIsEditMode={setIsEditMode} modal={modal} setModal={setModal} />
+            <ArtistAddGenreModal artist={artist} modal={modal} setModal={setModal} />
         </div>);
     }
 
@@ -189,12 +275,13 @@ function ArtistComponent()
     const [searchResults, setSearchResults] = useState([]);
     const [artist, setArtist] = useState('');
     const [isEditMode, setIsEditMode] = useState(false);
+    const [modal, setModal] = useState(false);
     return (<div className="App-Author-Component">
         <div className="App-Artist-SearchContainer">
             <ArtistSearchBar searchText={searchText} setSearchText={setSearchText} setSearchResults={setSearchResults} />
             <ArtistSearchResults searchResults={searchResults} setArtist={setArtist} setSearchText={setSearchText} setSearchResults={setSearchResults} />
         </div>
-        <Artist artist={artist} isEditMode={isEditMode} setIsEditMode={setIsEditMode} />
+        <Artist artist={artist} isEditMode={isEditMode} setIsEditMode={setIsEditMode} modal={modal} setModal={setModal}/>
     </div>);
 }
 
