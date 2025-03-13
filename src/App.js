@@ -1,5 +1,3 @@
-//import Songs from './components/Songs.js';
-import Artist from './components/Artist.js';
 import './App.css';
 
 function App() {
@@ -7,7 +5,7 @@ function App() {
     <div className="App">
       <header className="App-header">
         <div>
-            <Artist/>
+            Holding page
         </div>
       </header>
     </div>

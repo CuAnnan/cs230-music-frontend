@@ -1,4 +1,5 @@
-import { useState, useId} from 'react';
+import { useState, useId, useEffect} from 'react';
+import { useParams, Link } from "react-router";
 import axios from 'axios';
 
 function ArtistSearchBar({searchText, setSearchText, setSearchResults})
@@ -39,19 +40,15 @@ function ArtistSearchBar({searchText, setSearchText, setSearchResults})
 
 function ArtistSearchResult({artist, setArtist, setSearchText, setSearchResults})
 {
+    let artistLink = `/artists/${encodeURIComponent(artist.name)}/${artist.idArtist}`;
     return (
         <div
             data-id-artists={artist.idArtist}
-            className="App-Artists-SearchResult"
-            onClick={(e)=>{
-                axios.get(`http://localhost:3000/artists/${artist.idArtist}`)
-                    .then(res=>{
-                       setArtist(res.data);
-                       setSearchText("");
-                       setSearchResults([]);
-                    });
-            }}>
-                {artist.name}
+            className="App-Artists-SearchResult" onClick={(e)=>{
+                setSearchText("");
+                setSearchResults([]);
+        }}>
+            <Link to={artistLink}>{artist.name}</Link>
         </div>
     );
 }
@@ -269,11 +266,10 @@ function Artist({artist, isEditMode, setIsEditMode, modal, setModal})
 }
 
 
-function ArtistComponent()
+function ArtistComponent({artist, setArtist})
 {
     const [searchText, setSearchText] = useState('');
     const [searchResults, setSearchResults] = useState([]);
-    const [artist, setArtist] = useState('');
     const [isEditMode, setIsEditMode] = useState(false);
     const [modal, setModal] = useState(false);
     return (<div className="App-Author-Component">
@@ -285,4 +281,31 @@ function ArtistComponent()
     </div>);
 }
 
-export default ArtistComponent;
+function Container()
+{
+    const {id} = useParams();
+    const [artist, setArtist] = useState('');
+
+    useEffect(() => {
+        (async()=> {
+            axios.get(`http://localhost:3000/artists/${id}`)
+                .then(res => {
+                    setArtist(res.data);
+                }).catch(err => {
+                console.log(err)
+            });
+        })();
+    },[id]);
+
+
+
+    return (<div className="App">
+        <header className="App-header">
+            <div>
+                <ArtistComponent artist={artist} setArtist={setArtist}/>
+            </div>
+        </header>
+    </div>);
+}
+
+export default Container;

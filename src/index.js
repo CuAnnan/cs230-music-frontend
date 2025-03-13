@@ -2,12 +2,28 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import Artist from './components/Artist';
 import reportWebVitals from './reportWebVitals';
+import { BrowserRouter, Routes, Route } from "react-router";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+/*
+render(
+
+);
+ */
+
 root.render(
   <React.StrictMode>
-    <App />
+      <BrowserRouter>
+          <Routes>
+              <Route path="/" element={<App />} />
+              <Route path="artists" element={<Artist />}>
+                  <Route path=":name/:id" element={<Artist/>}/>
+              </Route>
+          </Routes>
+      </BrowserRouter>
   </React.StrictMode>
 );
 

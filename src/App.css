@@ -40,6 +40,12 @@
   border-bottom:none;
 }
 
+.App-Artists-SearchResult a
+{
+  color:white;
+  text-decoration:none;
+}
+
 .App-Artists-SearchResult:last-child
 {
   border-bottom: 1px solid #cccccc;
