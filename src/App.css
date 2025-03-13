@@ -2,24 +2,9 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
 }
@@ -27,13 +12,108 @@
 .App-link {
   color: #61dafb;
 }
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.App-Artist-SearchContainer
+{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
 
+.App-Artists-SearchResults-Container
+{
+  position:relative;
+  width:8.4em;
+}
+
+.App-Artists-SearchResults
+{
+  position: absolute;
+  width:100%;
+  background-color: #282c34;
+}
+
+.App-Artists-SearchResult
+{
+  border: 1px solid #cccccc;
+  border-bottom:none;
+}
+
+.App-Artists-SearchResult:last-child
+{
+  border-bottom: 1px solid #cccccc;
+}
+
+.App-Artists-SearchResult:hover
+{
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.App-Artists-Genre
+{
+  padding-left:0.3em;
+  padding-right:0.3em;
+  border: 1px solid #cccccc;
+  border-radius: 0.8em;
+  background-color:#393d45;
+  margin-right:0.2em;
+}
+
+.App-Artists-Genre:hover
+{
+  cursor:pointer;
+  background-color:#404e56;
+}
+
+.App-Artist
+{
+  width:40%;
+  padding-left:30%;
+  padding-right:30%;
+}
+
+.App-Artist-Row
+{
+  display: flex;
+}
+
+.App-Artist-Row div
+{
+  flex: 4;
+  text-align:left;
+}
+
+.App-Artist-Row div:last-child
+{
+  flex:10;
+}
+
+.App-Button
+{
+  border:1px solid black;
+  cursor:pointer;
+  height:2em;
+  padding-right:0.5em;
+}
+
+.App-Button-Edit
+{
+  background-color: #0d0;
+}
+
+.App-Button-Edit:hover
+{
+  background-color: #0f0;
+}
+
+.App-Button-Delete
+{
+  background-color: #e66;
+}
+
+.App-Button-Delete:hover
+{
+  background-color: #f33;
+}
