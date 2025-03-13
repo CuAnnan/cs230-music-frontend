@@ -153,3 +153,20 @@
   left:40%;
   top:10%;
 }
+
+.App-Nav ul
+{
+  margin-top:0;
+  list-style:none;
+}
+
+.App-Nav a{
+  color: white;
+  margin-left:0.5em;
+  margin-right:0.5em;
+}
+
+.App-Nav ul li
+{
+  display:inline-block;
+}

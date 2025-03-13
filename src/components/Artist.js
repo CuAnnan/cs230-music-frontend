@@ -1,5 +1,6 @@
 import { useState, useId, useEffect} from 'react';
 import { useParams, Link } from "react-router";
+import Navbar from './Navbar';
 import axios from 'axios';
 
 function ArtistSearchBar({searchText, setSearchText, setSearchResults})
@@ -285,9 +286,9 @@ function Container()
 {
     const {id} = useParams();
     const [artist, setArtist] = useState('');
-
     useEffect(() => {
-        (async()=> {
+        if(!id) return;
+        (async () => {
             axios.get(`http://localhost:3000/artists/${id}`)
                 .then(res => {
                     setArtist(res.data);
@@ -295,13 +296,14 @@ function Container()
                 console.log(err)
             });
         })();
-    },[id]);
+    }, [id]);
 
 
 
     return (<div className="App">
         <header className="App-header">
             <div>
+                <Navbar />
                 <ArtistComponent artist={artist} setArtist={setArtist}/>
             </div>
         </header>
