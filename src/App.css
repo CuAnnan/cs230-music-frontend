@@ -59,6 +59,7 @@
   border-radius: 0.8em;
   background-color:#393d45;
   margin-right:0.2em;
+  white-space:nowrap;
 }
 
 .App-Artists-Genre:hover

@@ -141,6 +141,11 @@ function ArtistField({artist, fieldName, fieldValue, isEditMode})
     }
 }
 
+function ArtistGenreAdd({artist})
+{
+    return (<span className="App-Artists-Genre">Add new genre ⊕</span>);
+}
+
 function Artist({artist, isEditMode, setIsEditMode})
 {
     if(artist) {
@@ -150,6 +155,12 @@ function Artist({artist, isEditMode, setIsEditMode})
                 <ArtistGenre key={genre.idGenre} genre={genre} artist={artist} isEditMode={isEditMode}/>
             );
         });
+        if(isEditMode)
+        {
+            artistGenres.push(
+                <ArtistGenreAdd artist={artist}/>
+            );
+        }
 
 
         return (<div className="App-Artist">
