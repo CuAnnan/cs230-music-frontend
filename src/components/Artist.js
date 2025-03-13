@@ -88,7 +88,7 @@ function ArtistGenre({genre, artist, isEditMode})
                     artist.genres = artist.genres.filter((genre)=>{
                         return parseInt(genre.idGenre) !== parseInt(e.target.dataset.idGenre)
                     });
-                    e.target.remove();
+                    e.target.style.display="none";
                 }
                 else
                 {
@@ -102,14 +102,18 @@ function ArtistGenre({genre, artist, isEditMode})
 function ArtistControls({artist, isEditMode, setIsEditMode})
 {
     let editButtonText = isEditMode?"Save":"Edit";
-
     return (<div>
         <button className="App-Button App-Button-Edit" onClick={(e)=>{
             setIsEditMode(!isEditMode);
-            if(!isEditMode)
+            if(isEditMode)
             {
-                axios.put("http://localhost:3000/artists")
-                    .then()
+                axios.patch(
+                    "http://localhost:3000/artists",
+                    artist,
+                    { headers: { 'Content-Type': 'application/json'}}
+                ).then(()=>{
+                    console.log(artist);
+                });
             }
         }}>
             {editButtonText}
@@ -161,7 +165,7 @@ function Artist({artist, isEditMode, setIsEditMode})
                 <div>Genres:</div>
                 <div>{artistGenres}</div>
             </div>
-            <ArtistControls isEditMode={isEditMode} setIsEditMode={setIsEditMode} />
+            <ArtistControls artist={artist} isEditMode={isEditMode} setIsEditMode={setIsEditMode} />
         </div>);
     }
 
