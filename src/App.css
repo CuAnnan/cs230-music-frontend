@@ -40,7 +40,7 @@
   border-bottom:none;
 }
 
-.App-SearchResult a, .App-Album-Names a, .App-Row a
+.App-SearchResults a, .App-Album-Names a, .App-Row a
 {
   color:white;
   text-decoration:none;
@@ -174,4 +174,33 @@
 .App-Nav ul li
 {
   display:inline-block;
+}
+
+.App-Modal-Row
+{
+  display: flex;
+}
+
+.App-Modal-Row div:first-child
+{
+  flex: 4;
+}
+.App-Modal-Row div:last-child
+{
+  flex: 5;
+}
+
+.App-Modal-Row input
+{
+  width: 90%;
+  height: 70%;
+}
+
+.App-Modal-Foot
+{
+  bottom: 0px;
+  position: absolute;
+  width: 100%;
+  padding-bottom: 5px;
+  border-top: 1px solid #ccc;
 }

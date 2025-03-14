@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router";
 import Navbar from './Navbar';
 import axios from 'axios';
 
-function ArtistSearchBar({searchText, setSearchText, setSearchResults})
+function ArtistSearchBar({searchText, setSearchText, setSearchResults, setNewArtistModal})
 {
     const searchInputId = useId();
     return (
@@ -32,6 +32,16 @@ function ArtistSearchBar({searchText, setSearchText, setSearchResults})
                         }
                     }}/>
                 </div>
+                <div className="SearchBarElement">
+                    <button
+                        className="App-Button App-Button-Submit"
+                        onClick={()=>{
+                            setNewArtistModal(true);
+                        }}
+                    >
+                        Add new Artist
+                    </button>
+                </div>
             </form>
         </div>
     );
@@ -43,14 +53,14 @@ function ArtistSearchResult({artist, setArtist, setSearchText, setSearchResults}
 {
     let artistLink = `/artists/${encodeURIComponent(artist.name)}/${artist.idArtist}`;
     return (
-        <div
+        <Link to={artistLink}><div
             data-id-artists={artist.idArtist}
             className="App-SearchResult" onClick={(e)=>{
                 setSearchText("");
                 setSearchResults([]);
         }}>
-            <Link to={artistLink}>{artist.name}</Link>
-        </div>
+            {artist.name}
+        </div></Link>
     );
 }
 
@@ -112,13 +122,24 @@ function ArtistControls({artist, isEditMode, setIsEditMode})
                     artist,
                     { headers: { 'Content-Type': 'application/json'}}
                 ).then(()=>{
-                    console.log(artist);
+                    setIsEditMode(false);
                 });
             }
         }}>
             {editButtonText}
         </button>
-        <button className="App-Button App-Button-Delete">Delete</button>
+        <button
+            className="App-Button App-Button-Delete"
+            onClick={(e)=>{
+                axios.delete(
+                    "http://localhost:3000/artists/" + artist.idartist
+                ).then((result)=>{
+                    window.location.href=(`/artists/`);
+                });
+            }}
+        >
+            Delete
+        </button>
     </div>);
 }
 
@@ -178,9 +199,7 @@ function ArtistAddGenreModal({artist, modal, setModal})
                 <button
                     className="App-Button-Submit App-Button"
                     onClick={(e)=>{
-                        console.log("Here")
                         if(genres) {
-                            console.log("And here");
                             let pendingGenres = genres.split(',');
                             artist.pendingGenres = artist.pendingGenres?artist.pendingGenres:[];
                             let i = artist.pendingGenres.length > 0 ? artist.pendingGenres[artist.pendingGenres.length - 1].idGenre : 0;
@@ -278,22 +297,6 @@ function ArtistDetails({artist, isEditMode, setIsEditMode, modal, setModal})
 }
 
 
-function ArtistComponent({artist, setArtist})
-{
-    const [searchText, setSearchText] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
-    const [isEditMode, setIsEditMode] = useState(false);
-    const [modal, setModal] = useState(false);
-
-    return (<div className="App-Author-Component">
-        <div className="App-Search-Container">
-            <ArtistSearchBar searchText={searchText} setSearchText={setSearchText} setSearchResults={setSearchResults} />
-            <ArtistSearchResults searchResults={searchResults} setArtist={setArtist} setSearchText={setSearchText} setSearchResults={setSearchResults} />
-        </div>
-        <ArtistDetails artist={artist} isEditMode={isEditMode} setIsEditMode={setIsEditMode} modal={modal} setModal={setModal}/>
-    </div>);
-}
-
 function AlbumName({album})
 {
     return (<div className="App-Album-Name">
@@ -318,12 +321,120 @@ function AlbumNames({artist})
     );
 }
 
+function NewArtistModal({newArtistModal, setNewArtistModal, setArtist})
+{
+    const [newArtistName, setNewArtistName] = useState("");
+    const [artistGenreString, setArtistGenreString] = useState("");
+    const [monthlyListeners, setMonthlyListeners] = useState("");
+
+    if(!newArtistModal) return;
+
+
+    return(<div className="App-Modal">
+        <div className="App-Modal-Content">
+            <div className="App-Modal-Title">
+                New Artist
+            </div>
+            <div className="App-Modal-Body">
+                <div className="App-Modal-Row">
+                    <div>
+                        Band Name:
+                    </div>
+                    <div>
+                        <input
+                            value={newArtistName}
+                            onChange={(e)=>{
+                                setNewArtistName(e.target.value);
+                            }}/>
+                    </div>
+                </div>
+                <div className="App-Modal-Row">
+                    <div>Monthly Listeners:</div>
+                    <div>
+                        <input
+                            value={monthlyListeners}
+                            onChange={(e)=>{
+                                setMonthlyListeners(e.target.value);
+                            }}/>
+                    </div>
+                </div>
+                <div className="App-Modal-Row">
+                    <div>Genres:</div>
+                    <div>
+                        <input
+                            value={artistGenreString}
+                            onChange={(e)=>{
+                                setArtistGenreString(e.target.value);
+                            }}/>
+                    </div>
+                </div>
+            </div>
+            <div className="App-Modal-Foot">
+                <button
+                    className="App-Button-Submit App-Button"
+                    onClick={(e)=>{
+                        let genres = [];
+                        artistGenreString.split(',').forEach(genre=>{
+                            genres.push({name:genre.trim()});
+                        });
+                        let artist = {
+                            name:newArtistName,
+                            genres,
+                            monthlyListeners
+                        };
+                        axios.post(
+                            'http://localhost:3000/artists',
+                            artist
+                        ).then(res=>{
+                            window.location.href=(`/artists/${encodeURIComponent(artist.name)}/${res.data.idArtist}`);
+                        });
+                    }}>
+                    Done
+                </button>
+                <button
+                    className="App-Button-Delete App-Button"
+                    onClick={(e)=>{
+                        setNewArtistModal(false);
+                    }}>
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>);
+}
+
+
+function ArtistComponent({artist, setArtist})
+{
+    const [searchText, setSearchText] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [genresModal, setGenresModal] = useState(false);
+    const [newArtistModal, setNewArtistModal] = useState(false);
+
+
+    return (<div className="App-Author-Component">
+        <div className="App-Search-Container">
+            <ArtistSearchBar searchText={searchText} setSearchText={setSearchText} setSearchResults={setSearchResults} newArtistModal={newArtistModal} setNewArtistModal={setNewArtistModal} />
+            <ArtistSearchResults searchResults={searchResults} setArtist={setArtist} setSearchText={setSearchText} setSearchResults={setSearchResults} />
+        </div>
+        <ArtistDetails artist={artist} isEditMode={isEditMode} setIsEditMode={setIsEditMode} modal={genresModal} setModal={setGenresModal}/>
+        <AlbumNames artist={artist}/>
+        <NewArtistModal newArtistModal={newArtistModal} setNewArtistModal={setNewArtistModal} setArtist={setArtist}/>
+    </div>);
+}
+
 function Container()
 {
     const {id} = useParams();
-    const [artist, setArtist] = useState('');
+    const [artist, setArtist] = useState(null);
+
     useEffect(() => {
-        if(!id) return;
+        if(!id)
+        {
+            setArtist(null);
+            return;
+        }
         (async () => {
             axios.get(`http://localhost:3000/artists/${id}`)
                 .then(res => {
@@ -342,7 +453,6 @@ function Container()
             <div>
                 <Navbar />
                 <ArtistComponent artist={artist} setArtist={setArtist}/>
-                <AlbumNames artist={artist}/>
             </div>
         </header>
     </div>);
