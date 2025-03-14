@@ -12,7 +12,7 @@
 .App-link {
   color: #61dafb;
 }
-.App-Artist-SearchContainer
+.App-Search-Container
 {
   display: flex;
   flex-direction: column;
@@ -21,37 +21,42 @@
   width: 100%;
 }
 
-.App-Artists-SearchResults-Container
+.App-SearchResults-Container
 {
   position:relative;
   width:8.4em;
 }
 
-.App-Artists-SearchResults
+.App-SearchResults
 {
   position: absolute;
   width:100%;
   background-color: #282c34;
 }
 
-.App-Artists-SearchResult
+.App-SearchResult
 {
   border: 1px solid #cccccc;
   border-bottom:none;
 }
 
-.App-Artists-SearchResult a
+.App-SearchResult a, .App-Album-Names a, .App-Row a
 {
   color:white;
   text-decoration:none;
 }
 
-.App-Artists-SearchResult:last-child
+.App-Row a:hover, .App-Album-Names a:hover
+{
+  text-decoration: underline;
+}
+
+.App-SearchResult:last-child
 {
   border-bottom: 1px solid #cccccc;
 }
 
-.App-Artists-SearchResult:hover
+.App-SearchResult:hover
 {
   cursor:pointer;
   font-weight:bold;
@@ -74,25 +79,25 @@
   background-color:#404e56;
 }
 
-.App-Artist
+.App-Container
 {
   width:40%;
   padding-left:30%;
   padding-right:30%;
 }
 
-.App-Artist-Row
+.App-Row
 {
   display: flex;
 }
 
-.App-Artist-Row div
+.App-Row div
 {
   flex: 4;
   text-align:left;
 }
 
-.App-Artist-Row div:last-child
+.App-Row div:last-child
 {
   flex:10;
 }

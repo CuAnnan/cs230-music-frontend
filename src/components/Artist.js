@@ -45,7 +45,7 @@ function ArtistSearchResult({artist, setArtist, setSearchText, setSearchResults}
     return (
         <div
             data-id-artists={artist.idArtist}
-            className="App-Artists-SearchResult" onClick={(e)=>{
+            className="App-SearchResult" onClick={(e)=>{
                 setSearchText("");
                 setSearchResults([]);
         }}>
@@ -70,7 +70,7 @@ function ArtistSearchResults({searchResults, setSearchResults, setArtist, setSea
         }
     });
 
-    return (<div className="App-Artists-SearchResults-Container"><div className="App-Artists-SearchResults">
+    return (<div className="App-SearchResults-Container"><div className="App-SearchResults">
         {rows}
     </div></div>);
 }
@@ -246,16 +246,16 @@ function Artist({artist, isEditMode, setIsEditMode, modal, setModal})
         }
 
 
-        return (<div className="App-Artist">
-            <div className="App-Artist-Row">
+        return (<div className="App-Container">
+            <div className="App-Row">
                 <div>Artist Name:</div>
                 <ArtistField artist={artist} fieldName="name" fieldValue={artist.name} isEditMode={isEditMode} />
             </div>
-            <div className="App-Artist-Row">
+            <div className="App-Row">
                 <div>Monthly Listeners:</div>
                 <ArtistField artist={artist} fieldName="monthlyListeners" fieldValue={artist.monthlyListeners} isEditMode={isEditMode} />
             </div>
-            <div className="App-Artist-Row">
+            <div className="App-Row">
                 <div>Genres:</div>
                 <div>{artistGenres}</div>
             </div>
@@ -266,6 +266,17 @@ function Artist({artist, isEditMode, setIsEditMode, modal, setModal})
 
 }
 
+function ArtistDetails({artist, isEditMode, setIsEditMode, modal, setModal})
+{
+    if(!artist) return;
+    return(
+        <div>
+            <h3>Artist:</h3>
+            <Artist artist={artist} isEditMode={isEditMode} setIsEditMode={setIsEditMode} modal={modal} setModal={setModal}/>
+        </div>
+    );
+}
+
 
 function ArtistComponent({artist, setArtist})
 {
@@ -273,13 +284,38 @@ function ArtistComponent({artist, setArtist})
     const [searchResults, setSearchResults] = useState([]);
     const [isEditMode, setIsEditMode] = useState(false);
     const [modal, setModal] = useState(false);
+
     return (<div className="App-Author-Component">
-        <div className="App-Artist-SearchContainer">
+        <div className="App-Search-Container">
             <ArtistSearchBar searchText={searchText} setSearchText={setSearchText} setSearchResults={setSearchResults} />
             <ArtistSearchResults searchResults={searchResults} setArtist={setArtist} setSearchText={setSearchText} setSearchResults={setSearchResults} />
         </div>
-        <Artist artist={artist} isEditMode={isEditMode} setIsEditMode={setIsEditMode} modal={modal} setModal={setModal}/>
+        <ArtistDetails artist={artist} isEditMode={isEditMode} setIsEditMode={setIsEditMode} modal={modal} setModal={setModal}/>
     </div>);
+}
+
+function AlbumName({album})
+{
+    return (<div className="App-Album-Name">
+        <Link to={`/albums/${encodeURIComponent(album.name)}/${album.idAlbum}`}>{album.name}</Link>
+    </div>);
+}
+
+function AlbumNames({artist})
+{
+    if(!artist) return;
+    let albums = [];
+    artist.albums.forEach(album => {
+        albums.push(
+            <AlbumName key={album.idAlbum} album={album}/>
+        );
+    });
+    return (
+        <div className="App-Album-Names">
+            <h3>Albums:</h3>
+            {albums}
+        </div>
+    );
 }
 
 function Container()
@@ -291,10 +327,11 @@ function Container()
         (async () => {
             axios.get(`http://localhost:3000/artists/${id}`)
                 .then(res => {
+                    console.log(res.data);
                     setArtist(res.data);
                 }).catch(err => {
-                console.log(err)
-            });
+                    console.log(err)
+                });
         })();
     }, [id]);
 
@@ -305,6 +342,7 @@ function Container()
             <div>
                 <Navbar />
                 <ArtistComponent artist={artist} setArtist={setArtist}/>
+                <AlbumNames artist={artist}/>
             </div>
         </header>
     </div>);
