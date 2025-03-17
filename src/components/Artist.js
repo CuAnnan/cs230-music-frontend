@@ -32,22 +32,24 @@ function ArtistSearchBar({searchText, setSearchText, setSearchResults, setNewArt
                         }
                     }}/>
                 </div>
-                <div className="SearchBarElement">
-                    <button
-                        className="App-Button App-Button-Submit"
-                        onClick={()=>{
-                            setNewArtistModal(true);
-                        }}
-                    >
-                        Add new Artist
-                    </button>
-                </div>
             </form>
         </div>
     );
 }
 
-
+function ShowNewArtistModal({setNewArtistModal})
+{
+    return (<div className="SearchBarElement">
+        <button
+            className="App-Button App-Button-Submit"
+            onClick={()=>{
+                setNewArtistModal(true);
+            }}
+        >
+            Add new Artist
+        </button>
+    </div>);
+}
 
 function ArtistSearchResult({artist, setArtist, setSearchText, setSearchResults})
 {
@@ -265,7 +267,7 @@ function Artist({artist, isEditMode, setIsEditMode, modal, setModal})
         }
 
 
-        return (<div className="App-Container">
+        return (<>
             <div className="App-Row">
                 <div>Artist Name:</div>
                 <ArtistField artist={artist} fieldName="name" fieldValue={artist.name} isEditMode={isEditMode} />
@@ -280,7 +282,7 @@ function Artist({artist, isEditMode, setIsEditMode, modal, setModal})
             </div>
             <ArtistControls artist={artist} isEditMode={isEditMode} setIsEditMode={setIsEditMode} modal={modal} setModal={setModal} />
             <ArtistAddGenreModal artist={artist} modal={modal} setModal={setModal} />
-        </div>);
+        </>);
     }
 
 }
@@ -300,12 +302,99 @@ function ArtistDetails({artist, isEditMode, setIsEditMode, modal, setModal})
 function AlbumName({album})
 {
     return (<div className="App-Album-Name">
-        <Link to={`/albums/${encodeURIComponent(album.name)}/${album.idAlbum}`}>{album.name}</Link>
+        <Link to={`/albums/${encodeURIComponent(album.name)}/${album.idAlbum}`}>
+            <div>
+                {album.name}
+            </div>
+            <div>{album.songCount} songs</div>
+        </Link>
+    </div>);
+}
+
+function NewAlbumModal({newAlbumModal, setNewAlbumModal, artist})
+{
+    const[name, setName]=useState("");
+    const[numberListens,setNumberListens]= useState("");
+    const[releaseYear, setReleaseYear]=useState("");
+
+    if(!newAlbumModal) return;
+
+    return (<div className="App-Modal">
+        <div className="App-Modal-Content">
+            <div className="App-Modal-Title">
+                New Album
+            </div>
+            <div className="App-Modal-Body">
+                <div className="App-Modal-Row">
+                    <div>Album Name:</div>
+                    <div>
+                        <input
+                            value={name}
+                            onChange={(e)=>{
+                                setName(e.target.value);
+                            }}
+                        />
+                    </div>
+                </div>
+                <div className="App-Modal-Row">
+                    <div>Release Year:</div>
+                    <div>
+                        <input
+                            value={releaseYear}
+                            onChange={(e)=>{
+                                setReleaseYear(e.target.value)
+                            }}
+                        />
+                    </div>
+                </div>
+                <div className="App-Modal-Row">
+                    <div>Number of listens:</div>
+                    <div>
+                        <input
+                            value={numberListens}
+                            onChange={(e)=>{
+                                setNumberListens(e.target.value);
+                            }}
+                        />
+                    </div>
+                </div>
+            </div>
+            <div className="App-Modal-Foot">
+                <button
+                    className="App-Button-Submit App-Button"
+                    onClick={(e)=>{
+                        let album = {
+                            name,
+                            numberListens,
+                            releaseYear,
+                            idArtist:artist.idartist
+                        };
+                        axios
+                            .post('http://localhost:3000/albums/addAlbum',album)
+                            .then((res)=>{
+                                window.location.href=(`/albums/${album.name}/${res.data.idAlbum}`);
+                            });
+                    }}
+                    >
+                    Add Album
+                </button>
+                <button
+                    className="App-Button-Delete App-Button"
+                    onClick={(e)=>{
+                        setNewAlbumModal(false);
+                    }}
+                    >
+                    Cancel
+                </button>
+            </div>
+        </div>
     </div>);
 }
 
 function AlbumNames({artist})
 {
+    const[newAlbumModal, setNewAlbumModal] = useState(false);
+
     if(!artist) return;
     let albums = [];
     artist.albums.forEach(album => {
@@ -313,11 +402,24 @@ function AlbumNames({artist})
             <AlbumName key={album.idAlbum} album={album}/>
         );
     });
+
     return (
-        <div className="App-Album-Names">
-            <h3>Albums:</h3>
-            {albums}
-        </div>
+        <>
+            <div className="App-Album-Names">
+                <h3>Albums:</h3>
+                {albums}
+                <div className="App-Album-Add-New">
+                    <button
+                        className="App-Button App-Button-Submit"
+                        onClick={()=>{
+                            setNewAlbumModal(true);
+                        }}>
+                        Add Album
+                    </button>
+                </div>
+            </div>
+            <NewAlbumModal newAlbumModal={newAlbumModal} setNewAlbumModal={setNewAlbumModal} artist={artist}/>
+        </>
     );
 }
 
@@ -414,13 +516,16 @@ function ArtistComponent({artist, setArtist})
 
 
     return (<div className="App-Author-Component">
-        <div className="App-Search-Container">
-            <ArtistSearchBar searchText={searchText} setSearchText={setSearchText} setSearchResults={setSearchResults} newArtistModal={newArtistModal} setNewArtistModal={setNewArtistModal} />
-            <ArtistSearchResults searchResults={searchResults} setArtist={setArtist} setSearchText={setSearchText} setSearchResults={setSearchResults} />
+        <div className="App-Container">
+            <div className="App-Search-Container">
+                <ArtistSearchBar searchText={searchText} setSearchText={setSearchText} setSearchResults={setSearchResults} newArtistModal={newArtistModal} setNewArtistModal={setNewArtistModal} />
+                <ArtistSearchResults searchResults={searchResults} setArtist={setArtist} setSearchText={setSearchText} setSearchResults={setSearchResults} />
+            </div>
+            <ShowNewArtistModal setNewArtistModal={setNewArtistModal} />
+            <ArtistDetails artist={artist} isEditMode={isEditMode} setIsEditMode={setIsEditMode} modal={genresModal} setModal={setGenresModal}/>
+            <AlbumNames artist={artist}/>
+            <NewArtistModal newArtistModal={newArtistModal} setNewArtistModal={setNewArtistModal} setArtist={setArtist}/>
         </div>
-        <ArtistDetails artist={artist} isEditMode={isEditMode} setIsEditMode={setIsEditMode} modal={genresModal} setModal={setGenresModal}/>
-        <AlbumNames artist={artist}/>
-        <NewArtistModal newArtistModal={newArtistModal} setNewArtistModal={setNewArtistModal} setArtist={setArtist}/>
     </div>);
 }
 
@@ -438,10 +543,9 @@ function Container()
         (async () => {
             axios.get(`http://localhost:3000/artists/${id}`)
                 .then(res => {
-                    console.log(res.data);
                     setArtist(res.data);
                 }).catch(err => {
-                    console.log(err)
+                    console.warn(err)
                 });
         })();
     }, [id]);

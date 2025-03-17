@@ -204,3 +204,24 @@
   padding-bottom: 5px;
   border-top: 1px solid #ccc;
 }
+
+.App-Album-Name
+{
+  text-align:left;
+}
+
+.App-Album-Names a
+{
+  display:flex;
+}
+
+.App-Album-Name div
+{
+  flex: 3;
+}
+
+.App-Album-Name div:last-child
+{
+  text-align:right;
+  flex: 1;
+}

@@ -1,16 +1,77 @@
-import { useState, useEffect} from 'react';
+import {useState, useEffect, useId} from 'react';
 import { useParams, Link } from "react-router";
 import Navbar from './Navbar';
 import axios from 'axios';
 
-function AlbumSearchBar()
+function AlbumSearchBar({searchText, setSearchText, setSearchResults, setNewArtistModal})
 {
-
+    const searchInputId = useId();
+    return (
+        <div className="App-Albums-SearchBar">
+            <form onSubmit={(e)=>e.preventDefault()}>
+                <div className="SearchBarElement">
+                    <label htmlFor={searchInputId}>Album Search</label>
+                </div>
+                <div className="SearchBarElement">
+                    <input type="text"
+                           id={searchInputId}
+                           value={searchText}
+                           autoComplete="off"
+                           onChange={(e)=>{
+                               if(e.target.value)
+                               {
+                                   setSearchText(e.target.value);
+                                   axios.get(`http://localhost:3000/albums/startingWith/${e.target.value}`)
+                                       .then(res => {
+                                           setSearchResults(res.data);
+                                       });
+                               }
+                               else {
+                                   setSearchResults([]);
+                                   setSearchText("");
+                               }
+                           }}/>
+                </div>
+            </form>
+        </div>
+    );
 }
 
-function AlbumSearchResults()
-{
 
+function AlbumSearchResult({album, setSearchText, setSearchResults})
+{
+    let albumLink = `/albums/${encodeURIComponent(album.name)}/${album.idAlbum}`;
+    return (
+        <Link to={albumLink}><div
+            data-id-albums={album.idAlbum}
+            className="App-SearchResult" onClick={(e)=>{
+            setSearchText("");
+            setSearchResults([]);
+        }}>
+            {album.name}
+        </div></Link>
+    );
+}
+
+function AlbumSearchResults({searchResults, setSearchResults, setArtist, setSearchText})
+{
+    const rows = [];
+    if(!searchResults)
+    {
+        return;
+    }
+    searchResults.forEach((album)=>{
+        if(album)
+        {
+            rows.push(
+                <AlbumSearchResult key={album.idAlbum} album={album} setSearchText={setSearchText} setSearchResults={setSearchResults} />
+            );
+        }
+    });
+
+    return (<div className="App-SearchResults-Container"><div className="App-SearchResults">
+        {rows}
+    </div></div>);
 }
 
 function AlbumSong({song})
@@ -62,12 +123,11 @@ function Album({album, isEditMode, setIsEditMode, modal, setModal})
 {
     return(
         <div>
-            <div className="App-Container">
                 <h3>Album:</h3>
                 <AlbumDetails album={album} isEditMode={isEditMode} setIsEditMode={setIsEditMode} modal={modal} setModal={setModal}/>
                 <h3>Songs:</h3>
                 <AlbumSongs album={album} />
-            </div>
+
         </div>
     );
 }
@@ -82,11 +142,13 @@ function AlbumComponent({album, setAlbum})
     if(!album) return;
 
     return (<div className="App-Album-Component">
-        <div className="App-Album-SearchContainer">
-            <AlbumSearchBar searchText={searchText} setSearchText={setSearchText} setSearchResults={setSearchResults} />
-            <AlbumSearchResults searchResults={searchResults} setAlbum={setAlbum} setSearchText={setSearchText} setSearchResults={setSearchResults} />
+        <div className="App-Container">
+            <div className="App-Search-Container">
+                <AlbumSearchBar searchText={searchText} setSearchText={setSearchText} setSearchResults={setSearchResults} />
+                <AlbumSearchResults searchResults={searchResults} setAlbum={setAlbum} setSearchText={setSearchText} setSearchResults={setSearchResults} />
+            </div>
+            <Album album={album} isEditMode={isEditMode} setIsEditMode={setIsEditMode} setModal={setModal} modal={modal}  />
         </div>
-        <Album album={album} isEditMode={isEditMode} setIsEditMode={setIsEditMode} setModal={setModal} modal={modal}  />
     </div>);
 }
 
@@ -99,15 +161,12 @@ function Container()
         (async () => {
             axios.get(`http://localhost:3000/albums/${id}`)
                 .then(res => {
-                    console.log(res.data);
                     setAlbum(res.data);
                 }).catch(err => {
                 console.log(err)
             });
         })();
     }, [id]);
-
-
 
     return (<div className="App">
         <header className="App-header">
