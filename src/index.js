@@ -19,12 +19,13 @@ root.render(
   <React.StrictMode>
       <BrowserRouter>
           <Routes>
-              <Route path="/" element={<App />} />
-              <Route path="artists" element={<Artist />}>
-                  <Route path=":name/:id" element={<Artist/>}/>
-              </Route>
-              <Route path="albums" element={<Album/>}>
-                  <Route path=":name/:id" element={<Album/>}/>
+              <Route path="/" element={<App />}>
+                  <Route path="artists" element={<Artist />}>
+                      <Route path=":name/:id" element={<Artist/>}/>
+                  </Route>
+                  <Route path="albums" element={<Album/>}>
+                      <Route path=":name/:id" element={<Album/>}/>
+                  </Route>
               </Route>
           </Routes>
       </BrowserRouter>

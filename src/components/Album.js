@@ -92,42 +92,109 @@ function AlbumSongs({album})
     );
 }
 
-function AlbumDetails({album, isEditMode, setIsEditMode, modal, setModal})
+function AlbumField({album,  fieldName, isEditMode})
+{
+    const fieldValue = album[fieldName];
+    const [field, setField] = useState(fieldValue);
+
+
+    if(isEditMode)
+    {
+        return (<div>
+            <input value={field} onChange={(e)=>{
+                album[fieldName] = e.target.value;
+                setField(e.target.value);
+            }}/>
+        </div>);
+    }
+    else
+    {
+        return <div>{fieldValue}</div>
+    }
+}
+
+function AlbumControls({album, setAlbum, isEditMode, setIsEditMode}) {
+    const editText = isEditMode?"Update Album":"Edit Album";
+    return (<div>
+        <button
+            className="App-Button App-Button-Submit"
+            onClick={(e) => {
+                if (isEditMode) {
+                    axios
+                        .patch(
+                            `http://localhost:3000/albums/${album.idalbum}`,
+                            album
+                        )
+                        .then((res)=>{
+                            setAlbum(res.data);
+                            setIsEditMode(false);
+                        });
+                }
+                else
+                {
+                    setIsEditMode(true);
+                }
+
+            }}
+        >
+            {editText}
+        </button>
+        <button
+            className="App-Button App-Button-Delete"
+        >
+            Delete Album
+        </button>
+    </div>);
+}
+
+function AlbumDetails({album, setAlbum, isEditMode, setIsEditMode, modal, setModal})
 {
     let artistLink = `/artists/${encodeURIComponent(album.artist)}/${album.idArtist}`;
+    let [artistName, setArtistName] = useState(album.artist);
+
+    let artistNameField = isEditMode?
+        (<input
+            value={artistName}
+            onChange={(e)=>{
+                setArtistName(e.target.value);
+                album.artist = e.target.value;
+            }}
+        />):
+        (<Link to={artistLink}>{album.artist}</Link>);
+
     return (
         <div>
             <div className="App-Row">
                 <div>Album Name:</div>
-                <div>{album.name}</div>
+                <AlbumField album={album} isEditMode={isEditMode} fieldName="name"/>
             </div>
             <div className="App-Row">
                 <div>Artist:</div>
                 <div>
-                    <Link to={artistLink}>{album.artist}</Link>
+                    {artistNameField}
                 </div>
             </div>
             <div className="App-Row">
                 <div>Release Year:</div>
-                <div>{album.releaseYear}</div>
+                <AlbumField album={album} isEditMode={isEditMode} fieldName="releaseYear"/>
             </div>
             <div className="App-Row">
                 <div>Number of listens:</div>
-                <div>{album.numberListens}</div>
+                <AlbumField album={album} isEditMode={isEditMode} fieldName="numberListens"/>
             </div>
+            <AlbumControls album={album} isEditMode={isEditMode} setIsEditMode={setIsEditMode} setAlbum={setAlbum}/>
         </div>
     );
 }
 
-function Album({album, isEditMode, setIsEditMode, modal, setModal})
+function Album({album, setAlbum, isEditMode, setIsEditMode, modal, setModal})
 {
     return(
         <div>
                 <h3>Album:</h3>
-                <AlbumDetails album={album} isEditMode={isEditMode} setIsEditMode={setIsEditMode} modal={modal} setModal={setModal}/>
+                <AlbumDetails album={album} isEditMode={isEditMode} setIsEditMode={setIsEditMode} modal={modal} setModal={setModal} setAlbum={setAlbum}/>
                 <h3>Songs:</h3>
                 <AlbumSongs album={album} />
-
         </div>
     );
 }
@@ -139,7 +206,7 @@ function AlbumComponent({album, setAlbum})
     const [isEditMode, setIsEditMode] = useState(false);
     const [modal, setModal] = useState(false);
 
-    if(!album) return;
+    let albumNode = album?(<Album album={album} setAlbum={setAlbum} isEditMode={isEditMode} setIsEditMode={setIsEditMode} setModal={setModal} modal={modal}  />):"";
 
     return (<div className="App-Album-Component">
         <div className="App-Container">
@@ -147,7 +214,7 @@ function AlbumComponent({album, setAlbum})
                 <AlbumSearchBar searchText={searchText} setSearchText={setSearchText} setSearchResults={setSearchResults} />
                 <AlbumSearchResults searchResults={searchResults} setAlbum={setAlbum} setSearchText={setSearchText} setSearchResults={setSearchResults} />
             </div>
-            <Album album={album} isEditMode={isEditMode} setIsEditMode={setIsEditMode} setModal={setModal} modal={modal}  />
+            {albumNode}
         </div>
     </div>);
 }
@@ -168,14 +235,7 @@ function Container()
         })();
     }, [id]);
 
-    return (<div className="App">
-        <header className="App-header">
-            <div>
-                <Navbar />
-                <AlbumComponent album={album} setAlbum={setAlbum}/>
-            </div>
-        </header>
-    </div>);
+    return (<AlbumComponent album={album} setAlbum={setAlbum}/>);
 }
 
 export default Container;

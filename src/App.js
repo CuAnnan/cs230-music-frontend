@@ -1,5 +1,7 @@
 import './App.css';
 import Navbar from './components/Navbar';
+import {Outlet} from 'react-router-dom';
+
 
 function App() {
   return (
@@ -7,7 +9,7 @@ function App() {
       <header className="App-header">
         <div>
             <Navbar />
-            Holding page
+            <Outlet />
         </div>
       </header>
     </div>

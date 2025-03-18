@@ -552,14 +552,7 @@ function Container()
 
 
 
-    return (<div className="App">
-        <header className="App-header">
-            <div>
-                <Navbar />
-                <ArtistComponent artist={artist} setArtist={setArtist}/>
-            </div>
-        </header>
-    </div>);
+    return (<ArtistComponent artist={artist} setArtist={setArtist}/>);
 }
 
 export default Container;
