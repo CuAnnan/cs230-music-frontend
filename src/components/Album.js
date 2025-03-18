@@ -1,9 +1,8 @@
 import {useState, useEffect, useId} from 'react';
 import { useParams, Link } from "react-router";
-import Navbar from './Navbar';
 import axios from 'axios';
 
-function AlbumSearchBar({searchText, setSearchText, setSearchResults, setNewArtistModal})
+function AlbumSearchBar({searchText, setSearchText, setSearchResults})
 {
     const searchInputId = useId();
     return (
@@ -53,7 +52,7 @@ function AlbumSearchResult({album, setSearchText, setSearchResults})
     );
 }
 
-function AlbumSearchResults({searchResults, setSearchResults, setArtist, setSearchText})
+function AlbumSearchResults({searchResults, setSearchResults, setSearchText})
 {
     const rows = [];
     if(!searchResults)
@@ -76,7 +75,10 @@ function AlbumSearchResults({searchResults, setSearchResults, setArtist, setSear
 
 function AlbumSong({song})
 {
-    return (<div className="App-Row">{song.name}</div>);
+    let songURL = `http://localhost:3030/songs/${encodeURIComponent(song.name)}/${song.idSong}`;
+    return (
+        <div className="App-Row"><Link to={songURL}>{song.name}</Link></div>
+    );
 }
 
 function AlbumSongs({album})
@@ -154,7 +156,7 @@ function AlbumControls({album, setAlbum, isEditMode, setIsEditMode}) {
     </div>);
 }
 
-function AlbumDetails({album, setAlbum, isEditMode, setIsEditMode, modal, setModal})
+function AlbumDetails({album, setAlbum, isEditMode, setIsEditMode})
 {
     let artistLink = `/artists/${encodeURIComponent(album.artist)}/${album.idArtist}`;
     let [artistName, setArtistName] = useState(album.artist);
@@ -170,7 +172,7 @@ function AlbumDetails({album, setAlbum, isEditMode, setIsEditMode, modal, setMod
         (<Link to={artistLink}>{album.artist}</Link>);
 
     return (
-        <div>
+        <>
             <div className="App-Row">
                 <div>Album Name:</div>
                 <AlbumField album={album} isEditMode={isEditMode} fieldName="name"/>
@@ -190,21 +192,96 @@ function AlbumDetails({album, setAlbum, isEditMode, setIsEditMode, modal, setMod
                 <AlbumField album={album} isEditMode={isEditMode} fieldName="numberListens"/>
             </div>
             <AlbumControls album={album} isEditMode={isEditMode} setIsEditMode={setIsEditMode} setAlbum={setAlbum}/>
-        </div>
+        </>
     );
+}
+
+function AddSongModal({album, setAlbum, modal, setModal})
+{
+    const [name, setName] = useState("");
+    const [releaseYear, setReleaseYear] = useState("");
+
+    if(!modal)
+    {
+        return;
+    }
+
+    return(<div className="App-Modal">
+        <div className="App-Modal-Content">
+            <div className="App-Modal-Title">
+                Add Song(s) to {album.name}
+            </div>
+            <div className="App-Modal-Body">
+                <div className="App-Modal-Row">
+                    <div>Name</div>
+                    <div>
+                        <input
+                            value={name}
+                            onChange={(e)=>{
+                                setName(e.target.value);
+                            }}
+                            />
+                    </div>
+                </div>
+                <div className="App-Modal-Row">
+                    <div>Release Year:</div>
+                    <div>
+                        <input
+                            value={releaseYear}
+                            onChange={(e)=>{
+                                setReleaseYear(e.target.value);
+                            }}
+                        />
+                    </div>
+                </div>
+            </div>
+            <div className="App-Modal-Foot">
+                <button
+                    className="App-Button-Submit App-Button"
+                    onClick={(e)=>{
+                        axios.post('http://localhost:3000/songs/addSong', {
+                            idAlbum:album.idalbum,
+                            name,
+                            releaseYear
+                        }).then((res)=>{
+                            let idSong = res.data.idSong;
+                            album.songs.push({name, idSong});
+                            setAlbum(album);
+                            setModal(false);
+                        });
+                    }}
+                >Done</button>
+            </div>
+        </div>
+    </div>);
 }
 
 function Album({album, setAlbum, isEditMode, setIsEditMode, modal, setModal})
 {
     return(
-        <div>
-                <h3>Album:</h3>
-                <AlbumDetails album={album} isEditMode={isEditMode} setIsEditMode={setIsEditMode} modal={modal} setModal={setModal} setAlbum={setAlbum}/>
-                <h3>Songs:</h3>
-                <AlbumSongs album={album} />
-        </div>
+        <>
+            <div>
+                    <h3>Album:</h3>
+                    <AlbumDetails album={album} isEditMode={isEditMode} setIsEditMode={setIsEditMode} modal={modal} setModal={setModal} setAlbum={setAlbum}/>
+                    <h3>Songs:</h3>
+                    <AlbumSongs album={album} />
+                    <div>
+                        <button
+                            className="App-Button App-Button-Submit"
+                            onClick={(e)=>{
+                                setModal(true);
+                            }}
+                        >
+                            Add song
+                        </button>
+                    </div>
+            </div>
+            <AddSongModal modal={modal} setModal={setModal} album={album} setAlbum={setAlbum}/>
+        </>
     );
 }
+
+
 
 function AlbumComponent({album, setAlbum})
 {

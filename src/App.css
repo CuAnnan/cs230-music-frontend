@@ -120,12 +120,12 @@
   background-color: #0f0;
 }
 
-.App-Button-Delete
+.App-Button-Delete, .App-Button-Cancel
 {
   background-color: #e66;
 }
 
-.App-Button-Delete:hover
+.App-Button-Delete:hover, .App-Button-Cancel:hover
 {
   background-color: #f33;
 }

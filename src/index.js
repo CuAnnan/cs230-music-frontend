@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import Artist from './components/Artist';
 import Album from './components/Album';
+import Song from "./components/Song";
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, Routes, Route } from "react-router";
 
@@ -25,6 +26,9 @@ root.render(
                   </Route>
                   <Route path="albums" element={<Album/>}>
                       <Route path=":name/:id" element={<Album/>}/>
+                  </Route>
+                  <Route path="songs" element={<Song/>}>
+                      <Route path=":name/:id" element={<Song/>}/>
                   </Route>
               </Route>
           </Routes>

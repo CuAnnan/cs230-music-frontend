@@ -45,6 +45,13 @@ function Navbar()
                     Albums
                 </NavLink>
             </li>
+            <li>
+                <NavLink
+                    to="/songs"
+                    className={({ isActive }) =>isActive ? "active" : ""}>
+                    Songs
+                </NavLink>
+            </li>
         </ul>
     </div>);
 }
