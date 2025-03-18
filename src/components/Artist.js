@@ -1,6 +1,5 @@
 import { useState, useId, useEffect} from 'react';
 import { useParams, Link } from "react-router";
-import Navbar from './Navbar';
 import axios from 'axios';
 
 function ArtistSearchBar({searchText, setSearchText, setSearchResults, setNewArtistModal})

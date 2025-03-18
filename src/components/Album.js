@@ -141,6 +141,13 @@ function AlbumControls({album, setAlbum, isEditMode, setIsEditMode}) {
         </button>
         <button
             className="App-Button App-Button-Delete"
+            onClick={(e) => {
+                axios.delete(
+                    `http://localhost:3000/albums/${album.idalbum}`
+                ).then((res)=>{
+                    window.location.href=(`/albums/`);
+                });
+            }}
         >
             Delete Album
         </button>
@@ -230,8 +237,8 @@ function Container()
                 .then(res => {
                     setAlbum(res.data);
                 }).catch(err => {
-                console.log(err)
-            });
+
+                });
         })();
     }, [id]);
 
